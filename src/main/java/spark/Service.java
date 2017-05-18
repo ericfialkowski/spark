@@ -16,18 +16,8 @@
  */
 package spark;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.CountDownLatch;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import spark.embeddedserver.EmbeddedServer;
 import spark.embeddedserver.EmbeddedServers;
 import spark.embeddedserver.jetty.websocket.WebSocketHandlerClassWrapper;
@@ -39,6 +29,11 @@ import spark.route.ServletRoutes;
 import spark.ssl.SslStores;
 import spark.staticfiles.MimeType;
 import spark.staticfiles.StaticFilesConfiguration;
+
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 import static spark.globalstate.ServletFlag.isRunningFromServlet;
@@ -421,10 +416,16 @@ public final class Service extends Routable {
                 server.extinguish();
                 latch = new CountDownLatch(1);
             }
-            
-            routes.clear();
-            exceptionMapper.clear();
-            staticFilesConfiguration.clear();
+
+            if(routes != null) {
+                routes.clear();
+            }
+            if(exceptionMapper != null) {
+                exceptionMapper.clear();
+            }
+            if(staticFilesConfiguration != null) {
+                staticFilesConfiguration.clear();
+            }
             initialized = false;
         }).start();
     }
